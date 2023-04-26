@@ -18,6 +18,7 @@ secret_token = os.getenv('secret_token')
 stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = Dash(__name__, external_stylesheets=[dbc.themes.PULSE, dbc.icons.BOOTSTRAP])
 
+
 # READ EXCEL FILES FOR POPULATION-------------------------------------------------------------------------------------------
 pop = pd.ExcelFile("DashApp/population/Total_population.xlsx")
 population = pop.parse('Data',skiprows=3)
@@ -400,25 +401,27 @@ def updatecard(country_dropdown):
                           title_font_color= 'white')
         return fig
     else:
-        pass
         years = [str(x) for x in range(1961, 2022)]
         Total = []
         Gender = []
         Y = []
         for year in years:
-            total_pop = population[year].sum()
+            total_pop = population[population['Country Code']=='WLD'][year]
+            #total_pop = population[yea].sum()
             Total.append(total_pop)
             Gender.append('ALL')
             Y.append(year)
 
         for year in years:
-            male_pop = Male_population[year].sum()
+            #male_pop = Male_population[year].sum()
+            male_pop = Male_population[Male_population['Country Code']=='WLD'][year]
             Total.append(male_pop)
             Gender.append('MALE')
             Y.append(year)
                     
         for year in years:
-            female_pop = Female_population[year].sum()
+            #female_pop = Female_population[year].sum()
+            female_pop = Female_population[Female_population['Country Code']=='WLD'][year]
             Total.append(female_pop)
             Gender.append('FEMALE')
             Y.append(year)
@@ -444,10 +447,13 @@ def updatecard(my_dropdown,country_dropdown):
         year = ''.join(my_dropdown)
         previous_year = int(year) - 1
         previous_year = str(previous_year)
+        Total = numerize.numerize(float(population[population['Country Code']=='WLD'][year].to_string(index=False)))
+        #Total = numerize.numerize(population[year].sum())
+        #Total_Current = population[year].sum()
+        #Total_previous =  population[previous_year].sum()
         
-        Total = numerize.numerize(population[year].sum())
-        Total_Current = population[year].sum()
-        Total_previous =  population[previous_year].sum()
+        Total_Current = float(population[population['Country Code']=='WLD'][year].to_string(index=False))
+        Total_previous =  float(population[population['Country Code']=='WLD'][previous_year].to_string(index=False))
         
         percentage_Change = ((Total_Current-Total_previous)/Total_previous) * 100.0
         
@@ -467,7 +473,6 @@ def updatecard(my_dropdown,country_dropdown):
         Country_Year = Country_Total.to_string(index=False)
         Country_Year =  float(Country_Year)
         Total = numerize.numerize(Country_Year)
-
   
         Total_Current = population[population['Country Name'] == country_dropdown][year]        
         Total_previous = population[population['Country Name'] == country_dropdown][previous_year]
@@ -491,10 +496,10 @@ def updatecard(my_dropdown,country_dropdown):
         year = ''.join(my_dropdown)
         previous_year = int(year) - 1
         previous_year = str(previous_year)
-        
-        Male_Total = numerize.numerize(Male_population[year].sum())
-        Male_Current = Male_population[year].sum()
-        Male_previous =  Male_population[previous_year].sum()
+
+        Male_Total = numerize.numerize(float(Male_population[Male_population['Country Code']=='WLD'][year].to_string(index=False)))
+        Male_Current = float(Male_population[Male_population['Country Code']=='WLD'][year].to_string(index=False))
+        Male_previous =  float(Male_population[Male_population['Country Code']=='WLD'][previous_year].to_string(index=False))
         percentage_Change = ((Male_Current-Male_previous)/Male_previous) * 100.0
 
         if percentage_Change > 0:
@@ -536,10 +541,11 @@ def updatecard(my_dropdown,country_dropdown):
         year = ''.join(my_dropdown)
         previous_year = int(year) - 1
         previous_year = str(previous_year)
+
+        Female_Total = numerize.numerize(float(Female_population[Female_population['Country Code']=='WLD'][year].to_string(index=False)))
+        Female_Current = float(Female_population[Female_population['Country Code']=='WLD'][year].to_string(index=False))
+        Female_previous =  float(Female_population[Female_population['Country Code']=='WLD'][previous_year].to_string(index=False))
         
-        Female_Total = numerize.numerize(Female_population[year].sum())
-        Female_Current = Female_population[year].sum()
-        Female_previous =  Female_population[previous_year].sum()
         percentage_Change = ((Female_Current-Female_previous)/Female_previous) * 100.0
 
         if percentage_Change > 0:
